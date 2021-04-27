@@ -4,7 +4,9 @@
   "description": "Tarea 2 Taller de integración",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "start": "node ./src/app.js",
+    "postinstall": "npx prisma migrate deploy"
   },
   "repository": {
     "type": "git",
