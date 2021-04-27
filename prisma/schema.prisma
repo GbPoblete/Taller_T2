@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model artist {
+  id     String  @id @db.VarChar(200)
+  name   String? @db.VarChar(100)
+  age    Int?
+  albums String? @db.VarChar(100)
+  tracks String? @db.VarChar(100)
+  self   String? @db.VarChar(100)
+  album  album[]
+}
+
+model album {
+  id                   String  @id @db.VarChar(200)
+  artist_id            String? @db.VarChar(200)
+  name                 String? @db.VarChar(100)
+  genre                String? @db.VarChar(100)
+  artist               String? @db.VarChar(100)
+  tracks               String? @db.VarChar(100)
+  self                 String? @db.VarChar(100)
+  artist_albumToartist artist? @relation(fields: [artist_id], references: [id])
+  track                track[]
+}
+
+model track {
+  id                 String  @id @db.VarChar(200)
+  album_id           String? @db.VarChar(200)
+  name               String? @db.VarChar(100)
+  duration           Float?
+  times_played       Int?
+  artist             String? @db.VarChar(100)
+  album              String? @db.VarChar(100)
+  self               String? @db.VarChar(100)
+  album_albumTotrack album?  @relation(fields: [album_id], references: [id])
+}
