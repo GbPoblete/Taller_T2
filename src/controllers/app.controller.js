@@ -11,26 +11,28 @@ const pool = new Pool({
 });
 
 
-const getUsers = async (req, res) => {
-    const response = await pool.query('SELECT * FROM prueba_artist');
+const getArtist = async (req, res) => {
+    const response = await pool.query('SELECT * FROM Artist');
     console.log(response.rows);
-    res.status(200).json(response.rows);
-};
-
-const getUserById = async (req, res) => {
-    const response = await pool.query('SELECT * FROM prueba_artist WHERE id = $1', [req.params.id]);
     res.json(response.rows);
 };
 
-const createUsers =  async (req, res) => {
-    const {id, name, age } = req.body;
+const getArtistById = async (req, res) => {
+    const response = await pool.query('SELECT * FROM Artist WHERE id = $1', [req.params.id]);
+    res.json(response.rows);
+};
 
-    const response = await pool.query('INSERT INTO prueba_artist (id, name, age) VALUES ($1, $2, $3)',
-                [id, name, age]
+const createArtist =  async (req, res) => {
+    const {name, age } = req.body;
+
+    let encoded = btoa(name);
+    let encoded_corto = encoded.substring(0,22);
+
+    const response = await pool.query('INSERT INTO Artist (id, name, age) VALUES ($1, $2, $3)',
+                [encoded_corto, name, age]
             );
-    console.log('user created');
     res.json({
-        message: 'User Added Succesfully',
+        message: 'Artist Added Succesfully',
         body: {
             user: {id, name, age}
         }
@@ -46,8 +48,7 @@ const createUsers =  async (req, res) => {
 // };
 
 module.exports = {
-    getUsers,
-    createUsers,
-    getUserById,
-    // deleteUsers
+    getArtist, 
+    createArtist, 
+    getArtistById
 }

@@ -1,10 +1,10 @@
 const {Router} = require('express');
 const router = Router();
 
-const { getUsers, createUsers, getUserById, deleteUsers } = require('../controllers/app.controller')
+const { getArtist, createArtist, getArtistById} = require('../controllers/app.controller')
 
-router.get('/users', getUsers);
-router.get('/users/:id', getUserById);
-router.post('/users', createUsers);
-// router.delete('users/:id', deleteUsers);
+router.get('/artists', getArtist);
+router.get('/artist/:id', getArtistById);
+router.post('/artist', createArtist);
+
 module.exports = router;
