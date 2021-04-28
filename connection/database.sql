@@ -36,3 +36,13 @@ CREATE TABLE Track(
 INSERT INTO prueba_artist (id, name, age) VALUES
     (encode('Michael Jackson', 'base64'), 'Michael Jackson', 54),
     (encode('Chayanne', 'base64'), 'Chayanne', 51);
+
+-- 'SELECT * FROM Artist INNER JOIN Album ON id = artist_id'
+
+-- 'SELECT * FROM Album INNER JOIN Album ON id = artist_id'
+
+-- "SELECT DISTINCT Puerto.id_pu, pu_nombre, id_re, id_ci 
+--                 FROM Puerto INNER JOIN Instalacion 
+--                 ON Puerto.id_pu = Instalacion.id_pu
+--                 WHERE Instalacion.tipo = 'astillero'"
+    

@@ -21,6 +21,8 @@
   "homepage": "https://github.com/GbPoblete/Taller_T2#readme",
   "dependencies": {
     "@prisma/client": "^2.21.2",
+    "btoa": "^1.2.1",
+    "buffer": "^6.0.3",
     "express": "^4.17.1",
     "pg": "^8.6.0"
   },
