@@ -37,6 +37,20 @@ INSERT INTO prueba_artist (id, name, age) VALUES
     (encode('Michael Jackson', 'base64'), 'Michael Jackson', 54),
     (encode('Chayanne', 'base64'), 'Chayanne', 51);
 
+ALTER TABLE Album
+ADD CONSTRAINT fk_artist_album
+    FOREIGN KEY (artist_id)
+    REFERENCES Artist(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
+ALTER TABLE Track
+ADD CONSTRAINT fk_album_track
+    FOREIGN KEY (album_id)
+    REFERENCES Album(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE;
+
 -- 'SELECT * FROM Artist INNER JOIN Album ON id = artist_id'
 
 -- 'SELECT * FROM Album INNER JOIN Album ON id = artist_id'
