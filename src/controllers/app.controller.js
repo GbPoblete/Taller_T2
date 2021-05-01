@@ -7,7 +7,10 @@ const pool = new Pool({
     user: 'hskbsdwjplqvre',
     password: '0202bf7e5229a84aabdcaabe4f94d5018ad2376bf3ed125bb0024f0b3069bd73',
     database: 'dcbao6daqhgc2p',
-    port: '5432'
+    port: '5432',
+    ssl: {
+        rejectUnauthorized: false,
+      }
 });
 
 var Buffer = require('buffer/').Buffer;
