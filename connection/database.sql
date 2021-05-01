@@ -19,6 +19,7 @@ CREATE TABLE Album(
     tracks VARCHAR(100),
     self VARCHAR(100)
     
+    
 );
 
 CREATE TABLE Track(
@@ -41,15 +42,17 @@ ALTER TABLE Album
 ADD CONSTRAINT fk_artist_album
     FOREIGN KEY (artist_id)
     REFERENCES Artist(id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE;
+    ON DELETE CASCADE;
 
 ALTER TABLE Track
 ADD CONSTRAINT fk_album_track
     FOREIGN KEY (album_id)
     REFERENCES Album(id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE;
+    ON DELETE CASCADE;
+
+DROP TABLE Track;
+DROP TABLE Album;
+DROP TABLE Artist;
 
 -- 'SELECT * FROM Artist INNER JOIN Album ON id = artist_id'
 

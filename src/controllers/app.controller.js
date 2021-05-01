@@ -123,7 +123,7 @@ const createArtist =  async (req, res) => {
     const response_k = await pool.query('INSERT INTO Artist (id, name, age, albums, tracks, self) VALUES ($1, $2, $3, $4, $5, $6)',
                 [encoded_corto, name, age, url_albums, url_tracks, me]
             );
-    res.json(response_k.rows)
+    res.json('Artista creado')
 
 };
 
@@ -148,7 +148,7 @@ const createAlbum =  async (req, res) => {
     const response_l = await pool.query('INSERT INTO Album (id, artist_id, name, genre, artist, tracks, self) VALUES ($1, $2, $3, $4, $5, $6, $7)',
                 [encoded_corto_1, req.params.id , name, genre, url_artist, url_tracks, me]
             );
-    res.json(response_l.rows)
+    res.json('Album creado')
 
 };
 
@@ -174,7 +174,7 @@ const createTrack =  async (req, res) => {
     const response_m = await pool.query('INSERT INTO Track (id, album_id, name, duration, times_played, artist, album, self) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
                 [encoded_corto_1, req.params.id, name, duration, 0, url_artist, url_album, me]
             );
-    res.json(response_m.rows)
+    res.json('Track creado')
 
 };
 
@@ -206,28 +206,84 @@ const playTracksAlbum = async (req, res) => {
 const playArtistAlbums = async (req, res) => {
     try {
         let ids_tracks = await pool.query('SELECT id FROM Track WHERE album_id = (SELECT id FROM Album WHERE artist_id = $1)', [req.params.id]);
-        let times_tracks = await pool.query('SELECT times_played FROM Track WHERE id = (SELECT id FROM Track WHERE album_id = (SELECT id FROM Album WHERE artist_id = $1))', [req.params.id]);
+        var times_tracks = [];
+        var aux;
+        for (var i = 0; i < (ids_tracks.rows).length; i++){
+            aux = await pool.query('SELECT times_played FROM Track WHERE id = $1', [ids_tracks.rows[i].id]);
+            times_tracks.push(aux.rows[0])
+        }
         var response;
-        // for (var i = 0; i < (times_tracks.rows).length; i++){
-        //     response = await pool.query('UPDATE Track SET times_played = $1 WHERE album_id = $2', [times_tracks.rows[i].times_played + 1, ids_tracks.rows[i].id]);
-        // }
+        for (var i = 0; i < (times_tracks).length; i++){
+            response = await pool.query('UPDATE Track SET times_played = $1 WHERE id = $2', [times_tracks[i].times_played + 1, ids_tracks.rows[i].id]);
+        }
         res.json("canción reproducida");
     } catch (error){
         console.log(error);
     }
 };
 
-
-
-
 //DELETE
-// const deleteUsers = async (req, res) => {
-//     res.send('USER DELETED' + req.params.id);
-//     // const response = await pool.query('DELETE FROM prueba_artist WHERE id = $1', [req.params.id]);
-//     // console.log(response);
-//     // res.json(`User ${id} deleted successfully`);
-// };
+const deleteArtist = async (req, res) => {
+    try {
+        let ids_albums = await pool.query('SELECT id FROM Album WHERE artist_id = $1', [req.params.id]);
+        var ids_tracks = [];
+        var response_1;
+        var response_13;
+        var aux_1;
+        for (var k = 0; k < (ids_albums.rows).length; k++){
+            aux_1 = await pool.query('SELECT id FROM Track WHERE album_id = $1', [ids_albums.rows[k].id]);
+            for (var g= 0; g < (aux_1.rows).length; g++){
+                ids_tracks.push(aux_1.rows[g])
+            }
+        }
 
+        console.log(ids_albums.rows.length);
+
+        for (var i = 0; i < (ids_tracks).length; i++){
+            response_1 = await pool.query('DELETE FROM Track WHERE id = $1', [ids_tracks[i].id]);
+            console.log('canción con id: $1 eliminada', [ids_tracks[i].id]);
+        }
+
+        console.log('eliminados los tracks');
+
+        for (var y = 0; y < (ids_albums.rows).length; y++){
+            response_13 = await pool.query('DELETE FROM Album WHERE id = $1', [ids_albums.rows[y].id]);
+            console.log('canción con id: $1 eliminada', [ids_albums.rows[y].id]);
+        }
+        console.log('eliminados los albums');
+
+        let action_3 = await pool.query('DELETE FROM Artist WHERE id = $1', [req.params.id]);
+
+        res.json("artista eliminado");
+    } catch (error){
+        console.log(error);
+    }
+};
+
+const deleteTrack = async (req, res) => {
+    try {
+        const response_z = await pool.query('DELETE FROM Track WHERE id = $1', [req.params.id]);
+        res.json("canción eliminada");
+    } catch (error){
+        console.log(error);
+    }
+};
+
+const deleteAlbum = async (req, res) => {
+    try {
+        let ids = await pool.query('SELECT id FROM Track WHERE album_id = $1', [req.params.id]);
+        var response;
+        for (var i = 0; i < (ids.rows).length; i++){
+            response = await pool.query('DELETE FROM Track WHERE id = $1', [ids.rows[i].id]);
+            console.log('canción con id: $1 eliminada', [ids.rows[i].id]);
+        }
+        console.log('eliminados los tracks')
+        let action_2 = await pool.query('DELETE FROM Album WHERE id = $1', [req.params.id]);
+        res.json("album eliminado");
+    } catch (error){
+        console.log(error);
+    }
+};
 
 module.exports = {
     getArtist, 
@@ -244,5 +300,8 @@ module.exports = {
     createTrack,
     playArtistAlbums,
     playTrackById,
-    playTracksAlbum
+    playTracksAlbum,
+    deleteArtist,
+    deleteTrack,
+    deleteAlbum
 }

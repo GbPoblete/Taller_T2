@@ -3,7 +3,8 @@ const router = Router();
 
 const { getArtist, createArtist, getArtistById, getArtistAlbums, 
         getArtistTracks, getAlbum, getAlbumById, getTrack, getTrackById, 
-        getAlbumTracks, createAlbum, createTrack, playArtistAlbums, playTrackById, playTracksAlbum} = require('../controllers/app.controller')
+        getAlbumTracks, createAlbum, createTrack, playArtistAlbums, playTrackById, 
+        playTracksAlbum, deleteArtist, deleteTrack, deleteAlbum} = require('../controllers/app.controller')
 
 //RUTAS GET 
 router.get('/artists', getArtist);
@@ -27,5 +28,8 @@ router.put('/tracks/:id/play', playTrackById);
 router.put('/albums/:id/tracks/play', playTracksAlbum);
 
 //RUTAS DELETE
+router.delete('/artists/:id', deleteArtist);
+router.delete('/tracks/:id', deleteTrack);
+router.delete('/albums/:id', deleteAlbum);
 
 module.exports = router;
