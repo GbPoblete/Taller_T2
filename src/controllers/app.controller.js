@@ -16,9 +16,9 @@ var Buffer = require('buffer/').Buffer;
 const getArtist = async (req, res) => {
     try{
         const response_a = await pool.query('SELECT * FROM Artist');
-        res.json(response_a.rows);
+        res.status(200).send(response_a.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');
     }
     
 };
@@ -26,9 +26,9 @@ const getArtist = async (req, res) => {
 const getArtistById = async (req, res) => {
     try{
         const response_b = await pool.query('SELECT * FROM Artist WHERE id = $1', [req.params.id]);
-        res.json(response_b.rows);
+        res.status(200).json(response_b.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');;
     }
     
 };
@@ -36,9 +36,9 @@ const getArtistById = async (req, res) => {
 const getArtistAlbums = async (req, res) => {
     try {
         const response_c = await pool.query('SELECT * FROM Album WHERE artist_id = $1', [req.params.id]);
-        res.json(response_c.rows);
+        res.status(200).json(response_c.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');;
     }
 };
 
@@ -46,18 +46,18 @@ const getArtistTracks = async (req, res) => {
     try {
         const response_d = await pool.query('SELECT id FROM Album WHERE artist_id = $1', [req.params.id]);
         const response_e = await pool.query('SELECT * FROM Track WHERE album_id = $1',[response_d.rows[0].id]);
-        res.json(response_e.rows);
+        res.status(200).json(response_e.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');;
     }
 };
 
 const getAlbum = async (req, res) => {
     try{
         const response_f = await pool.query('SELECT * FROM Album');
-        res.json(response_f.rows);
+        res.status(200).json(response_f.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');;
     }
     
 };
@@ -65,9 +65,9 @@ const getAlbum = async (req, res) => {
 const getAlbumById = async (req, res) => {
     try{
         const response_g = await pool.query('SELECT * FROM Album WHERE id = $1', [req.params.id]);
-        res.json(response_g.rows);
+        res.status(200).json(response_g.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');;
     }
     
 };
@@ -75,18 +75,18 @@ const getAlbumById = async (req, res) => {
 const getAlbumTracks = async (req, res) => {
     try {
         const response_h = await pool.query('SELECT * FROM Track WHERE album_id = $1', [req.params.id]);
-        res.json(response_h.rows);
+        res.status(200).json(response_h.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');;
     }
 };
 
 const getTrack = async (req, res) => {
     try{
         const response_i = await pool.query('SELECT * FROM Track');
-        res.json(response_i.rows);
+        res.status(200).json(response_i.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');;
     }
     
 };
@@ -94,9 +94,9 @@ const getTrack = async (req, res) => {
 const getTrackById = async (req, res) => {
     try{
         const response_j = await pool.query('SELECT * FROM Track WHERE id = $1', [req.params.id]);
-        res.json(response_j.rows);
+        res.status(200).json(response_j.rows);
     } catch (error){
-        console.log(error);
+        res.status(404).send('Not found');;
     }
     
 };
@@ -123,7 +123,7 @@ const createArtist =  async (req, res) => {
     const response_k = await pool.query('INSERT INTO Artist (id, name, age, albums, tracks, self) VALUES ($1, $2, $3, $4, $5, $6)',
                 [encoded_corto, name, age, url_albums, url_tracks, me]
             );
-    res.json('Artista creado')
+    res.status(201).json('Artista creado')
 
 };
 
@@ -148,7 +148,7 @@ const createAlbum =  async (req, res) => {
     const response_l = await pool.query('INSERT INTO Album (id, artist_id, name, genre, artist, tracks, self) VALUES ($1, $2, $3, $4, $5, $6, $7)',
                 [encoded_corto_1, req.params.id , name, genre, url_artist, url_tracks, me]
             );
-    res.json('Album creado')
+    res.status(201).json('Album creado')
 
 };
 
@@ -174,7 +174,7 @@ const createTrack =  async (req, res) => {
     const response_m = await pool.query('INSERT INTO Track (id, album_id, name, duration, times_played, artist, album, self) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
                 [encoded_corto_1, req.params.id, name, duration, 0, url_artist, url_album, me]
             );
-    res.json('Track creado')
+    res.status(201).json('Track creado')
 
 };
 
@@ -183,7 +183,7 @@ const playTrackById = async (req, res) => {
     try {
         const times = await pool.query('SELECT times_played FROM Track WHERE id = $1', [req.params.id]);
         const response_n = await pool.query('UPDATE Track SET times_played = $1 WHERE id = $2', [times.rows[0].times_played + 1, req.params.id]);
-        res.json("canción reproducida");
+        res.status(200).json("canción reproducida");
     } catch (error){
         console.log(error);
     }
@@ -197,7 +197,7 @@ const playTracksAlbum = async (req, res) => {
         for (var i = 0; i < (times_1.rows).length; i++){
             response = await pool.query('UPDATE Track SET times_played = $1 WHERE album_id = $2', [times_1.rows[i].times_played + 1, ids.rows[i].id]);
         }
-        res.json("canción reproducida");
+        res.satus(200).json("canción reproducida");
     } catch (error){
         console.log(error);
     }
@@ -216,7 +216,7 @@ const playArtistAlbums = async (req, res) => {
         for (var i = 0; i < (times_tracks).length; i++){
             response = await pool.query('UPDATE Track SET times_played = $1 WHERE id = $2', [times_tracks[i].times_played + 1, ids_tracks.rows[i].id]);
         }
-        res.json("canción reproducida");
+        res.status(200).json("canción reproducida");
     } catch (error){
         console.log(error);
     }
@@ -254,7 +254,7 @@ const deleteArtist = async (req, res) => {
 
         let action_3 = await pool.query('DELETE FROM Artist WHERE id = $1', [req.params.id]);
 
-        res.json("artista eliminado");
+        res.status(204).json("artista eliminado");
     } catch (error){
         console.log(error);
     }
@@ -263,7 +263,7 @@ const deleteArtist = async (req, res) => {
 const deleteTrack = async (req, res) => {
     try {
         const response_z = await pool.query('DELETE FROM Track WHERE id = $1', [req.params.id]);
-        res.json("canción eliminada");
+        res.status(204).json("canción eliminada");
     } catch (error){
         console.log(error);
     }
@@ -279,7 +279,7 @@ const deleteAlbum = async (req, res) => {
         }
         console.log('eliminados los tracks')
         let action_2 = await pool.query('DELETE FROM Album WHERE id = $1', [req.params.id]);
-        res.json("album eliminado");
+        res.status(204).json("album eliminado");
     } catch (error){
         console.log(error);
     }
