@@ -18,17 +18,17 @@ const getArtist = async (req, res) => {
         const response_a = await pool.query('SELECT * FROM Artist');
         res.status(200).send(response_a.rows);
     } catch (error){
-        res.status(404).send('Not found');
+        res.send(error);
     }
-    
 };
 
 const getArtistById = async (req, res) => {
     try{
         const response_b = await pool.query('SELECT * FROM Artist WHERE id = $1', [req.params.id]);
-        res.status(200).json(response_b.rows);
+        console.log(response_b);
+        res.status(200).send(response_b.rows);
     } catch (error){
-        res.status(404).send('Not found');;
+        res.status(404).send();
     }
     
 };
@@ -36,9 +36,9 @@ const getArtistById = async (req, res) => {
 const getArtistAlbums = async (req, res) => {
     try {
         const response_c = await pool.query('SELECT * FROM Album WHERE artist_id = $1', [req.params.id]);
-        res.status(200).json(response_c.rows);
+        res.status(200).send(response_c.rows);
     } catch (error){
-        res.status(404).send('Not found');;
+        res.status(404).send();
     }
 };
 
@@ -46,18 +46,18 @@ const getArtistTracks = async (req, res) => {
     try {
         const response_d = await pool.query('SELECT id FROM Album WHERE artist_id = $1', [req.params.id]);
         const response_e = await pool.query('SELECT * FROM Track WHERE album_id = $1',[response_d.rows[0].id]);
-        res.status(200).json(response_e.rows);
+        res.status(200).send(response_e.rows);
     } catch (error){
-        res.status(404).send('Not found');;
+        res.status(404).send();
     }
 };
 
 const getAlbum = async (req, res) => {
     try{
         const response_f = await pool.query('SELECT * FROM Album');
-        res.status(200).json(response_f.rows);
+        res.status(200).send(response_f.rows);
     } catch (error){
-        res.status(404).send('Not found');;
+        res.send(error);
     }
     
 };
@@ -65,9 +65,9 @@ const getAlbum = async (req, res) => {
 const getAlbumById = async (req, res) => {
     try{
         const response_g = await pool.query('SELECT * FROM Album WHERE id = $1', [req.params.id]);
-        res.status(200).json(response_g.rows);
+        res.status(200).send(response_g.rows);
     } catch (error){
-        res.status(404).send('Not found');;
+        res.status(404).send();
     }
     
 };
@@ -75,18 +75,18 @@ const getAlbumById = async (req, res) => {
 const getAlbumTracks = async (req, res) => {
     try {
         const response_h = await pool.query('SELECT * FROM Track WHERE album_id = $1', [req.params.id]);
-        res.status(200).json(response_h.rows);
+        res.status(200).send(response_h.rows);
     } catch (error){
-        res.status(404).send('Not found');;
+        res.status(404).send();
     }
 };
 
 const getTrack = async (req, res) => {
     try{
         const response_i = await pool.query('SELECT * FROM Track');
-        res.status(200).json(response_i.rows);
+        res.status(200).send(response_i.rows);
     } catch (error){
-        res.status(404).send('Not found');;
+        res.send(error);
     }
     
 };
@@ -94,88 +94,129 @@ const getTrack = async (req, res) => {
 const getTrackById = async (req, res) => {
     try{
         const response_j = await pool.query('SELECT * FROM Track WHERE id = $1', [req.params.id]);
-        res.status(200).json(response_j.rows);
+        res.status(200).send(response_j.rows);
     } catch (error){
-        res.status(404).send('Not found');;
+        res.status(404).send();
     }
     
 };
 
 //POSTS
 const createArtist =  async (req, res) => {
-    let {name, age } = req.body;
-    // https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
-    let buff = new Buffer(name);
-    let encoded = buff.toString('base64');
-    let encoded_corto = encoded.substring(0,22);
+    try {
+        let {name, age } = req.body;
+        // https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
+        let buff = new Buffer(name);
+        let encoded = buff.toString('base64');
+        let encoded_corto = encoded.substring(0,22);
 
-    var cadena1 = "hhttps://gigiappt2.herokuapp.com/artists/";
-    var cadena2 = "/albums";
-    var url_albums = cadena1 + encoded_corto + cadena2;
+        var cadena1 = "hhttps://gigiappt2.herokuapp.com/artists/";
+        var cadena2 = "/albums";
+        var url_albums = cadena1 + encoded_corto + cadena2;
 
-    var cadena3 = "hhttps://gigiappt2.herokuapp.com/artists/";
-    var cadena4 = "/tracks";
-    var url_tracks = cadena3 + encoded_corto + cadena4;
+        var cadena3 = "hhttps://gigiappt2.herokuapp.com/artists/";
+        var cadena4 = "/tracks";
+        var url_tracks = cadena3 + encoded_corto + cadena4;
 
-    var cadena5 = "hhttps://gigiappt2.herokuapp.com/artists/";
-    var me = cadena5 + encoded_corto;
+        var cadena5 = "hhttps://gigiappt2.herokuapp.com/artists/";
+        var me = cadena5 + encoded_corto;
 
-    const response_k = await pool.query('INSERT INTO Artist (id, name, age, albums, tracks, self) VALUES ($1, $2, $3, $4, $5, $6)',
-                [encoded_corto, name, age, url_albums, url_tracks, me]
-            );
-    res.status(201).json('Artista creado')
+        const response_k = await pool.query('INSERT INTO Artist (id, name, age, albums, tracks, self) VALUES ($1, $2, $3, $4, $5, $6)',
+                    [encoded_corto, name, age, url_albums, url_tracks, me]
+                );
+        
+        const view = await pool.query('SELECT * FROM Artist where id = $1', [encoded_corto])
+        res.status(201).send(view.rows)
+
+    } catch(error){
+        console.log(error);
+        if (error.code = '23505'){
+            res.status(409).send(view.rows)
+        }
+        else{
+            res.status(400).send('input inválido')
+        }
+    }
 
 };
 
 const createAlbum =  async (req, res) => {
-    let {name, genre } = req.body;
-    // https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
+    try{
+        let {name, genre } = req.body;
+        // https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
 
-    let buff_1 = new Buffer(name + ':' + req.params.id);
-    let encoded_1 = buff_1.toString('base64');
-    let encoded_corto_1 = encoded_1.substring(0,22);
+        let buff_1 = new Buffer(name + ':' + req.params.id);
+        let encoded_1 = buff_1.toString('base64');
+        let encoded_corto_1 = encoded_1.substring(0,22);
 
-    var cadena1 = "hhttps://gigiappt2.herokuapp.com/artists/";
-    var url_artist = cadena1 + req.params.id;
+        var cadena1 = "hhttps://gigiappt2.herokuapp.com/artists/";
+        var url_artist = cadena1 + req.params.id;
 
-    var cadena3 = "hhttps://gigiappt2.herokuapp.com/albums/";
-    var cadena4 = "/tracks";
-    var url_tracks = cadena3 + encoded_corto_1 + cadena4;
+        var cadena3 = "hhttps://gigiappt2.herokuapp.com/albums/";
+        var cadena4 = "/tracks";
+        var url_tracks = cadena3 + encoded_corto_1 + cadena4;
 
-    var cadena5 = "hhttps://gigiappt2.herokuapp.com/albums/";
-    var me = cadena5 + encoded_corto_1;
+        var cadena5 = "hhttps://gigiappt2.herokuapp.com/albums/";
+        var me = cadena5 + encoded_corto_1;
 
-    const response_l = await pool.query('INSERT INTO Album (id, artist_id, name, genre, artist, tracks, self) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-                [encoded_corto_1, req.params.id , name, genre, url_artist, url_tracks, me]
-            );
-    res.status(201).json('Album creado')
+        const response_l = await pool.query('INSERT INTO Album (id, artist_id, name, genre, artist, tracks, self) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+                    [encoded_corto_1, req.params.id , name, genre, url_artist, url_tracks, me]
+                );
+        const view_2 = await pool.query('SELECT * FROM Artist where id = $1', [encoded_corto_1])
 
+        res.status(201).send(view_2.rows)
+
+    } catch(error){
+        console.log(error);
+        if (error.code = '23505'){
+            res.status(409).send(view_2.rows)
+        }
+        // else if (){
+
+        // }
+        else{
+            res.status(400).send('input inválido')
+        }
+
+    }
 };
 
 const createTrack =  async (req, res) => {
-    let {name, duration } = req.body;
-    // https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
+    try{
+        let {name, duration } = req.body;
+        // https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
 
-    const search = await pool.query('SELECT artist_id FROM Album WHERE id = $1', [req.params.id]);
-    
-    let buff_1 = new Buffer(name + ':' + req.params.id);
-    let encoded_1 = buff_1.toString('base64');
-    let encoded_corto_1 = encoded_1.substring(0,22);
+        const search = await pool.query('SELECT artist_id FROM Album WHERE id = $1', [req.params.id]);
+        
+        let buff_1 = new Buffer(name + ':' + req.params.id);
+        let encoded_1 = buff_1.toString('base64');
+        var encoded_corto_3 = encoded_1.substring(0,22);
 
-    var cadena1 = "hhttps://gigiappt2.herokuapp.com/artists/";
-    var url_artist = cadena1 + search;
+        var cadena1 = "hhttps://gigiappt2.herokuapp.com/artists/";
+        var url_artist = cadena1 + search;
 
-    var cadena3 = "hhttps://gigiappt2.herokuapp.com/albums/";
-    var url_album = cadena3 + encoded_corto_1;
+        var cadena3 = "hhttps://gigiappt2.herokuapp.com/albums/";
+        var url_album = cadena3 + encoded_corto_3;
 
-    var cadena5 = "hhttps://gigiappt2.herokuapp.com/tracks/";
-    var me = cadena5 + encoded_corto_1;
+        var cadena5 = "hhttps://gigiappt2.herokuapp.com/tracks/";
+        var me = cadena5 + encoded_corto_3;
 
-    const response_m = await pool.query('INSERT INTO Track (id, album_id, name, duration, times_played, artist, album, self) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-                [encoded_corto_1, req.params.id, name, duration, 0, url_artist, url_album, me]
-            );
-    res.status(201).json('Track creado')
+        const response_m = await pool.query('INSERT INTO Track (id, album_id, name, duration, times_played, artist, album, self) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+                    [encoded_corto_3, req.params.id, name, duration, 0, url_artist, url_album, me]
+                );
+        var view_3 = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3])
+        res.status(201).send(view_3.rows)
+    } catch(error){
+        if (error.code = '23505'){
+            res.status(409).send(view_3.rows)
+        }
+        // else if (){
 
+        // }
+        else{
+            res.status(400).send('input inválido')
+        }
+    }
 };
 
 //PUTS
@@ -183,9 +224,9 @@ const playTrackById = async (req, res) => {
     try {
         const times = await pool.query('SELECT times_played FROM Track WHERE id = $1', [req.params.id]);
         const response_n = await pool.query('UPDATE Track SET times_played = $1 WHERE id = $2', [times.rows[0].times_played + 1, req.params.id]);
-        res.status(200).json("canción reproducida");
+        res.status(200).send("canción reproducida");
     } catch (error){
-        console.log(error);
+        res.status(404).send();
     }
 };
 
@@ -197,9 +238,9 @@ const playTracksAlbum = async (req, res) => {
         for (var i = 0; i < (times_1.rows).length; i++){
             response = await pool.query('UPDATE Track SET times_played = $1 WHERE album_id = $2', [times_1.rows[i].times_played + 1, ids.rows[i].id]);
         }
-        res.satus(200).json("canción reproducida");
+        res.satus(200).send("canción reproducida");
     } catch (error){
-        console.log(error);
+        res.status(404).send();
     }
 };
 
@@ -216,9 +257,9 @@ const playArtistAlbums = async (req, res) => {
         for (var i = 0; i < (times_tracks).length; i++){
             response = await pool.query('UPDATE Track SET times_played = $1 WHERE id = $2', [times_tracks[i].times_played + 1, ids_tracks.rows[i].id]);
         }
-        res.status(200).json("canción reproducida");
+        res.status(200).send("canción reproducida");
     } catch (error){
-        console.log(error);
+        res.status(404).send();
     }
 };
 
@@ -254,18 +295,18 @@ const deleteArtist = async (req, res) => {
 
         let action_3 = await pool.query('DELETE FROM Artist WHERE id = $1', [req.params.id]);
 
-        res.status(204).json("artista eliminado");
+        res.status(204).send("artista eliminado");
     } catch (error){
-        console.log(error);
+        res.status(404).send();
     }
 };
 
 const deleteTrack = async (req, res) => {
     try {
         const response_z = await pool.query('DELETE FROM Track WHERE id = $1', [req.params.id]);
-        res.status(204).json("canción eliminada");
+        res.status(204).send("canción eliminada");
     } catch (error){
-        console.log(error);
+        res.status(404).send();
     }
 };
 
@@ -279,9 +320,9 @@ const deleteAlbum = async (req, res) => {
         }
         console.log('eliminados los tracks')
         let action_2 = await pool.query('DELETE FROM Album WHERE id = $1', [req.params.id]);
-        res.status(204).json("album eliminado");
+        res.status(204).send("album eliminado");
     } catch (error){
-        console.log(error);
+        res.status(404).send();
     }
 };
 
