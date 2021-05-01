@@ -3,10 +3,10 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-    host: 'localhost',
-    user: 'postgres',
-    password: '',
-    database: 'music',
+    host: 'ec2-54-224-120-186.compute-1.amazonaws.com',
+    user: 'hskbsdwjplqvre',
+    password: '0202bf7e5229a84aabdcaabe4f94d5018ad2376bf3ed125bb0024f0b3069bd73',
+    database: 'dcbao6daqhgc2p',
     port: '5432'
 });
 
@@ -130,7 +130,7 @@ const createArtist =  async (req, res) => {
 
     } catch(error){
         console.log(error);
-        if (error.code = '23505'){
+        if (error.detail.includes('already exists')){
             res.status(409).send(view.rows)
         }
         else{
@@ -166,9 +166,10 @@ const createAlbum =  async (req, res) => {
 
         res.status(201).send(view_2.rows)
 
+
     } catch(error){
         console.log(error);
-        if (error.code = '23505'){
+        if (error.detail.includes('already exists')){
             res.status(409).send(view_2.rows)
         }
         // else if (){
@@ -207,7 +208,7 @@ const createTrack =  async (req, res) => {
         var view_3 = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3])
         res.status(201).send(view_3.rows)
     } catch(error){
-        if (error.code = '23505'){
+        if (error.detail.includes('already exists')){
             res.status(409).send(view_3.rows)
         }
         // else if (){
