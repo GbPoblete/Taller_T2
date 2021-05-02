@@ -3,24 +3,24 @@ require('dotenv').config();
 console.log("using_enviroment", process.env.NODE_ENV);
 const { Pool } = require('pg');
 
-    // const pool = new Pool({
-    //     host: 'localhost',
-    //     user: 'postgres',
-    //     password: '',
-    //     database: 'music',
-    //     port: '5432'
-    // });
-
     const pool = new Pool({
-        host: 'ec2-54-224-120-186.compute-1.amazonaws.com',
-        user: 'hskbsdwjplqvre',
-        password: '0202bf7e5229a84aabdcaabe4f94d5018ad2376bf3ed125bb0024f0b3069bd73',
-        database: 'dcbao6daqhgc2p',
-        port: '5432',
-        ssl: {
-            rejectUnauthorized: false,
-        }
+        host: 'localhost',
+        user: 'postgres',
+        password: '',
+        database: 'music',
+        port: '5432'
     });
+
+    // const pool = new Pool({
+    //     host: 'ec2-54-224-120-186.compute-1.amazonaws.com',
+    //     user: 'hskbsdwjplqvre',
+    //     password: '0202bf7e5229a84aabdcaabe4f94d5018ad2376bf3ed125bb0024f0b3069bd73',
+    //     database: 'dcbao6daqhgc2p',
+    //     port: '5432',
+    //     ssl: {
+    //         rejectUnauthorized: false,
+    //     }
+    // });
 
 
 var Buffer = require('buffer/').Buffer;
@@ -42,7 +42,7 @@ const getArtistById = async (req, res) => {
         console.log(response_b);
         res.status(200).send(response_b.rows[0]);
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
     
 };
@@ -52,7 +52,7 @@ const getArtistAlbums = async (req, res) => {
         const response_c = await pool.query('SELECT * FROM Album WHERE artist_id = $1', [req.params.id]);
         res.status(200).send(response_c.rows);
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
@@ -62,7 +62,7 @@ const getArtistTracks = async (req, res) => {
         const response_e = await pool.query('SELECT * FROM Track WHERE album_id = $1',[response_d.rows[0].id]);
         res.status(200).send(response_e.rows);
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
@@ -81,7 +81,7 @@ const getAlbumById = async (req, res) => {
         const response_g = await pool.query('SELECT * FROM Album WHERE id = $1', [req.params.id]);
         res.status(200).send(response_g.rows);
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
     
 };
@@ -91,7 +91,7 @@ const getAlbumTracks = async (req, res) => {
         const response_h = await pool.query('SELECT * FROM Track WHERE album_id = $1', [req.params.id]);
         res.status(200).send(response_h.rows);
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
@@ -110,7 +110,7 @@ const getTrackById = async (req, res) => {
         const response_j = await pool.query('SELECT * FROM Track WHERE id = $1', [req.params.id]);
         res.status(200).send(response_j.rows);
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
     
 };
@@ -143,16 +143,14 @@ const createArtist =  async (req, res) => {
         res.status(201).send(view.rows[0])
 
     } catch(error){
-        const view = await pool.query('SELECT * FROM Artist where id = $1', [encoded_corto])
-        console.log(error);
-        if (error.detail.includes('already exists')){
-            res.status(409).send(view.rows)
-        }
-        else{
-            res.status(400).send('input inválido')
-        }
+        res.send('mal')
+        // if (error.detail.includes('already exists')){
+        //     res.status(409).send(view.rows)
+        // }
+        // else{
+        //     res.status(400).send('input inválido')
+        // }
     }
-
 };
 
 const createAlbum =  async (req, res) => {
@@ -183,16 +181,16 @@ const createAlbum =  async (req, res) => {
 
 
     } catch(error){
-        console.log(error);
-        if (error.detail.includes('already exists')){
-            res.status(409).send(view_2.rows)
-        }
-        // else if (){
-
+        res.send('mal')
+        // if (error.detail.includes('already exists')){
+        //     res.status(409).send(view_2.rows)
         // }
-        else{
-            res.status(400).send('input inválido')
-        }
+        // // else if (){
+
+        // // }
+        // else{
+        //     res.status(400).send('input inválido')
+        // }
 
     }
 };
@@ -243,7 +241,7 @@ const playTrackById = async (req, res) => {
         const response_n = await pool.query('UPDATE Track SET times_played = $1 WHERE id = $2', [times.rows[0].times_played + 1, req.params.id]);
         res.status(200).send("canción reproducida");
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
@@ -257,7 +255,7 @@ const playTracksAlbum = async (req, res) => {
         }
         res.satus(200).send("canción reproducida");
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
@@ -276,7 +274,7 @@ const playArtistAlbums = async (req, res) => {
         }
         res.status(200).send("canción reproducida");
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
@@ -314,7 +312,7 @@ const deleteArtist = async (req, res) => {
 
         res.status(204).send("artista eliminado");
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
@@ -323,7 +321,7 @@ const deleteTrack = async (req, res) => {
         const response_z = await pool.query('DELETE FROM Track WHERE id = $1', [req.params.id]);
         res.status(204).send("canción eliminada");
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
@@ -339,7 +337,7 @@ const deleteAlbum = async (req, res) => {
         let action_2 = await pool.query('DELETE FROM Album WHERE id = $1', [req.params.id]);
         res.status(204).send("album eliminado");
     } catch (error){
-        res.status(404).send();
+        res.status(404).send('mal');
     }
 };
 
