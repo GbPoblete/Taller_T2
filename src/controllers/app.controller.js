@@ -40,7 +40,7 @@ const getArtistById = async (req, res) => {
     try{
         const response_b = await pool.query('SELECT * FROM Artist WHERE id = $1', [req.params.id]);
         console.log(response_b);
-        res.status(200).send(response_b.rows);
+        res.status(200).send(response_b.rows[0]);
     } catch (error){
         res.status(404).send();
     }
@@ -143,6 +143,7 @@ const createArtist =  async (req, res) => {
         res.status(201).send(view.rows[0])
 
     } catch(error){
+        const view = await pool.query('SELECT * FROM Artist where id = $1', [encoded_corto])
         console.log(error);
         if (error.detail.includes('already exists')){
             res.status(409).send(view.rows)
@@ -222,8 +223,9 @@ const createTrack =  async (req, res) => {
         var view_3 = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3])
         res.status(201).send(view_3.rows)
     } catch(error){
+        var view_3 = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3])
         if (error.detail.includes('already exists')){
-            res.status(409).send(view_3.rows)
+            res.status(409).send()
         }
         // else if (){
 
