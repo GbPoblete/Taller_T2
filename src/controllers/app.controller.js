@@ -3,24 +3,24 @@ require('dotenv').config();
 console.log("using_enviroment", process.env.NODE_ENV);
 const { Pool } = require('pg');
 
-    const pool = new Pool({
-        host: 'localhost',
-        user: 'postgres',
-        password: '',
-        database: 'music',
-        port: '5432'
-    });
-
     // const pool = new Pool({
-    //     host: 'ec2-54-224-120-186.compute-1.amazonaws.com',
-    //     user: 'hskbsdwjplqvre',
-    //     password: '0202bf7e5229a84aabdcaabe4f94d5018ad2376bf3ed125bb0024f0b3069bd73',
-    //     database: 'dcbao6daqhgc2p',
-    //     port: '5432',
-    //     ssl: {
-    //         rejectUnauthorized: false,
-    //     }
+    //     host: 'localhost',
+    //     user: 'postgres',
+    //     password: '',
+    //     database: 'music',
+    //     port: '5432'
     // });
+
+    const pool = new Pool({
+        host: 'ec2-54-224-120-186.compute-1.amazonaws.com',
+        user: 'hskbsdwjplqvre',
+        password: '0202bf7e5229a84aabdcaabe4f94d5018ad2376bf3ed125bb0024f0b3069bd73',
+        database: 'dcbao6daqhgc2p',
+        port: '5432',
+        ssl: {
+            rejectUnauthorized: false,
+        }
+    });
 
 
 var Buffer = require('buffer/').Buffer;
