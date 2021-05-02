@@ -2,17 +2,14 @@
 require('dotenv').config();
 console.log("using_enviroment", process.env.NODE_ENV);
 const { Pool } = require('pg');
-if (process.env.NODE_ENV == "local"){
-    const pool = new Pool({
-        host: 'localhost',
-        user: 'postgres',
-        password: '',
-        database: 'music',
-        port: '5432'
-    });
-}
 
-else{
+    // const pool = new Pool({
+    //     host: 'localhost',
+    //     user: 'postgres',
+    //     password: '',
+    //     database: 'music',
+    //     port: '5432'
+    // });
 
     const pool = new Pool({
         host: 'ec2-54-224-120-186.compute-1.amazonaws.com',
@@ -25,8 +22,6 @@ else{
         }
     });
 
-}
-
 
 var Buffer = require('buffer/').Buffer;
 
@@ -34,6 +29,7 @@ var Buffer = require('buffer/').Buffer;
 const getArtist = async (req, res) => {
     try{
         const response_a = await pool.query('SELECT * FROM Artist');
+        console.log(response_a.rows)
         res.status(200).send(response_a.rows);
     } catch (error){
         res.send(error);
