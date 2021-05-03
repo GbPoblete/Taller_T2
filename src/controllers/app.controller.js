@@ -245,56 +245,63 @@ const createAlbum =  async (req, res) => {
 };
 
 const createTrack =  async (req, res) => {
-    try{
-        let {name, duration } = req.body;
-        console.log(duration)
-        if(typeof name != 'string' || typeof duration != 'number' || name == null || duration == null){
-            console.log('entre al if')
-            res.status(400).send()
-        }
-        else{
-             // https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
-            const search = await pool.query('SELECT artist_id FROM Album WHERE id = $1', [req.params.id]);
-            console.log(search.rows[0].artist_id)
-            
-            let buff_1 = new Buffer(name + ':' + req.params.id);
-            let encoded_1 = buff_1.toString('base64');
-            var encoded_corto_3 = encoded_1.substring(0,22);
-
-            var cadena1 = "hhttps://gigiappt2.herokuapp.com/artists/";
-            var url_artist = cadena1 + search.rows[0].artist_id;
-
-            var cadena3 = "hhttps://gigiappt2.herokuapp.com/albums/";
-            var url_album = cadena3 + encoded_corto_3;
-
-            var cadena5 = "hhttps://gigiappt2.herokuapp.com/tracks/";
-            var me = cadena5 + encoded_corto_3;
-
-            let existe_album = await pool.query('SELECT * FROM Album where id = $1', [req.params.id]);
-            //no existe el album
-            if(existe_album.rows.length == 0){
-                res.status(422).send()
+    let existe_album = await pool.query('SELECT * FROM Album where id = $1', [req.params.id]);
+    if(existe_album.rows.length == 0){
+        res.status(422).send()
+    }
+    else{
+        try{
+            let {name, duration } = req.body;
+            console.log(duration)
+            if(typeof name != 'string' || typeof duration != 'number' || name == null || duration == null){
+                console.log('entre al if')
+                res.status(400).send()
             }
             else{
-                let view_inicial = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3]);
-                //si no está creado
-                if (view_inicial.rows.length == 0){
-                    console.log('voy a nacer')
-                    const response_m = await pool.query('INSERT INTO Track (id, album_id, name, duration, times_played, artist, album, self) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-                            [encoded_corto_3, req.params.id, name, duration, 0, url_artist, url_album, me]
-                        );
-                    var view_3 = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3])
-                    res.status(201).send(view_3.rows[0])
+                console.log('entre aqui')
+                 // https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
+                const search = await pool.query('SELECT artist_id FROM Album WHERE id = $1', [req.params.id]);
+                console.log('sali qui')
+                console.log(search.rows)
+                console.log('llegue')
+                let buff_1 = new Buffer(name + ':' + req.params.id);
+                let encoded_1 = buff_1.toString('base64');
+                var encoded_corto_3 = encoded_1.substring(0,22);
+    
+                var cadena1 = "hhttps://gigiappt2.herokuapp.com/artists/";
+                var url_artist = cadena1 + search.rows[0].artist_id;
+    
+                var cadena3 = "hhttps://gigiappt2.herokuapp.com/albums/";
+                var url_album = cadena3 + encoded_corto_3;
+    
+                var cadena5 = "hhttps://gigiappt2.herokuapp.com/tracks/";
+                var me = cadena5 + encoded_corto_3;
+                console.log('segunda query')
+                if(existe_album.rows.length == 0){
+                    res.status(422).send()
                 }
                 else{
-                    const view_final = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3]);
-                    res.status(409).send(view_final.rows[0])
+                    let view_inicial = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3]);
+                    //si no está creado
+                    if (view_inicial.rows.length == 0){
+                        console.log('voy a nacer')
+                        const response_m = await pool.query('INSERT INTO Track (id, album_id, name, duration, times_played, artist, album, self) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+                                [encoded_corto_3, req.params.id, name, duration, 0, url_artist, url_album, me]
+                            );
+                        var view_3 = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3])
+                        res.status(201).send(view_3.rows[0])
+                    }
+                    else{
+                        const view_final = await pool.query('SELECT * FROM Track where id = $1', [encoded_corto_3]);
+                        res.status(409).send(view_final.rows[0])
+                    }
                 }
             }
+        } catch(error){
+            res.status(404).send()
         }
-    } catch(error){
-        res.status(404).send()
     }
+    
 };
 
 const createArtistById = async (req, res) => {
